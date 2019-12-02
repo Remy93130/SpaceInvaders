@@ -31,7 +31,7 @@ namespace SpaceInvaders.GameObjects
 
         protected void Shoot(Game gameInstance)
         {
-            missile = new Missile(new Vecteur2d(Position.X + Image.Width / 2, Position.Y - Image.Height / 2), 1, Properties.Resources.shoot1);
+            missile = new Missile(new Vecteur2d(Position.X + Image.Width / 2, Position.Y - Image.Height / 2), 10, Properties.Resources.shoot1);
             gameInstance.AddNewGameObject(missile);
         }
     }

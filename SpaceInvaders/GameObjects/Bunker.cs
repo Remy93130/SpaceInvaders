@@ -25,17 +25,19 @@ namespace SpaceInvaders.GameObjects
 
         private void PixelByPixel(Missile m)
         {
-            int touched = 0;
+            // int touched = 0;
             for (int i = 0; i < m.Image.Height; i++)
             {
-                if (!m.IsAlive()) return;
                 for (int j = 0; j < m.Image.Width; j++)
                 {
-                    var missile = new Vecteur2d(j, i);
-                    var inter = new Vecteur2d((m.Position.X - m.Image.Width / 2) - (Position.X - Image.Width / 2) + missile.X, (m.Position.Y - m.Image.Width / 2) - (Position.Y - Image.Width / 2) + missile.Y);
+                    var inter = new Vecteur2d(j - Position.X + m.Position.X, i - Position.Y + m.Position.Y);
                     if (inter.X < Image.Width && inter.Y < Image.Height && inter.X > 0 && inter.Y > 0)
                         if (Image.GetPixel((int)inter.X, (int)inter.Y) == Color.FromArgb(255, 0, 0, 0))
-                            touched++;
+                        {
+                            // touched++;
+                            Image.SetPixel((int)inter.X, (int)inter.Y, Color.FromArgb(0, 255, 255, 255));
+                            m.Lives--;
+                        }
                 }
             }
         }
