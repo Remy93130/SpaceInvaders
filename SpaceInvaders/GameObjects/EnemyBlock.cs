@@ -27,6 +27,13 @@ namespace SpaceInvaders.GameObjects
 
         public override void Collision(Missile m)
         {
+            foreach (var ship in enemyShips)
+            {
+                ship.Collision(m);
+            }
+            int oldLen = enemyShips.Count;
+            enemyShips.RemoveWhere(ship => ship.Lives <= 0);
+            if (oldLen != enemyShips.Count) UpdateSize();
         }
 
         // public override void Draw(Game gameInstance, Graphics graphics) => enemyShips.ToList().ForEach(enemy => enemy.Draw(gameInstance, graphics));
@@ -34,7 +41,7 @@ namespace SpaceInvaders.GameObjects
         public override void Draw(Game gameInstance, Graphics graphics)
         {
             enemyShips.ToList().ForEach(enemy => enemy.Draw(gameInstance, graphics));
-            graphics.DrawRectangle(new Pen(Game.blackBrush), (float)Position.X, (float)Position.Y, size.Width, 100);
+            // graphics.DrawRectangle(new Pen(Game.blackBrush), (float)Position.X, (float)Position.Y, size.Width, 100);
         }
 
         public override bool IsAlive() => (enemyShips.Count(_ship => _ship.IsAlive()) > 0)? true : false;
@@ -81,7 +88,7 @@ namespace SpaceInvaders.GameObjects
                     maxLenX = ship.Position.X;
                     image_len = ship.Image.Width;
                 }
-                else if (ship.Position.X < minLenX) minLenX = ship.Position.X;
+                if (ship.Position.X < minLenX) minLenX = ship.Position.X;
             }
             Position = new Vecteur2d(minLenX, Position.Y);
             size.Width = (int)maxLenX + (int)image_len - (int)Position.X;

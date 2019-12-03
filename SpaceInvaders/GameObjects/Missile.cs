@@ -13,7 +13,8 @@ namespace SpaceInvaders.GameObjects
 
         public Missile(Vecteur2d position, int lives, Bitmap image) : base(position, lives, image)
         {
-            speed = .99;
+            speed = 9.99;
+            //speed = .99;
         }
 
         public override void Update(Game gameInstance, double deltaT)
@@ -25,6 +26,12 @@ namespace SpaceInvaders.GameObjects
                 if (stupidObject.Equals(this)) continue;
                 stupidObject.Collision(this);
             }
+        }
+
+        protected override void OnCollision(Missile m, Vecteur2d collisionPoint)
+        {
+            Lives = 0;
+            m.Lives = 0;
         }
     }
 }

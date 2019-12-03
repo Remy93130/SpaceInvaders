@@ -31,8 +31,16 @@ namespace SpaceInvaders.GameObjects
 
         protected void Shoot(Game gameInstance)
         {
-            missile = new Missile(new Vecteur2d(Position.X + Image.Width / 2, Position.Y - Image.Height / 2), 10, Properties.Resources.shoot1);
+            missile = new Missile(new Vecteur2d(Position.X + Image.Width / 2, Position.Y - Image.Height / 2 - 10), 10, Properties.Resources.shoot1);
             gameInstance.AddNewGameObject(missile);
+        }
+
+        protected override void OnCollision(Missile m, Vecteur2d collisionPoint)
+        {
+            Console.WriteLine("Touched spaceship lives before : " + Lives);
+            Lives -= m.Lives;
+            m.Lives = 0;
+            Console.WriteLine("Touched spaceship lives left : " + Lives);
         }
     }
 }
