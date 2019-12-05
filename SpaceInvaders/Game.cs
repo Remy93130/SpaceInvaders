@@ -6,10 +6,14 @@ using SpaceInvaders.Utils;
 
 namespace SpaceInvaders
 {
+    /// <summary>
+    /// The main class with the game logic
+    /// </summary>
     class Game
     {
 
         #region GameObjects management
+
         /// <summary>
         /// Set of all game objects currently in the game
         /// </summary>
@@ -25,10 +29,8 @@ namespace SpaceInvaders
         /// The new object will be added at the beginning of the next update loop
         /// </summary>
         /// <param name="gameObject">object to add</param>
-        public void AddNewGameObject(GameObject gameObject)
-        {
-            pendingNewGameObjects.Add(gameObject);
-        }
+        public void AddNewGameObject(GameObject gameObject) => pendingNewGameObjects.Add(gameObject);
+
         #endregion
 
         #region game technical elements
@@ -44,9 +46,20 @@ namespace SpaceInvaders
 
         public SpaceShip playerShip;
 
-        public double bunkerPosition;
+        /// <summary>
+        /// 
+        /// </summary>
+        private double bunkerPosition;
 
+        /// <summary>
+        /// The enemy block
+        /// </summary>
         private EnemyBlock enemies;
+
+        /// <summary>
+        /// The state of the game
+        /// </summary>
+        private GameState state;
 
         #endregion
 
@@ -67,17 +80,15 @@ namespace SpaceInvaders
         /// </summary>
         public static Font defaultFont = new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel);
 
-        public GameState state;
         #endregion
 
+        #region Constructors
 
-        #region constructors
         /// <summary>
         /// Singleton constructor
         /// </summary>
         /// <param name="gameSize">Size of the game area</param>
-        /// 
-        /// <returns></returns>
+        /// <returns>Game instance</returns>
         public static Game CreateGame(Size gameSize)
         {
             if (game == null)
@@ -89,11 +100,14 @@ namespace SpaceInvaders
         /// Private constructor
         /// </summary>
         /// <param name="gameSize">Size of the game area</param>
-        private Game(Size gameSize)
-        {
-            InitGame(gameSize);
-        }
+        private Game(Size gameSize) => InitGame(gameSize);
 
+        /// <summary>
+        /// Method to create a new game
+        /// Used when the program is started or if the player
+        /// want do one more party
+        /// </summary>
+        /// <param name="gameSize"></param>
         private void InitGame(Size gameSize)
         {
             state = GameState.Play;
@@ -107,6 +121,10 @@ namespace SpaceInvaders
             pendingNewGameObjects.Add(playerShip);
         }
 
+        /// <summary>
+        /// Method to create ennemies
+        /// Add more if you dare
+        /// </summary>
         private void CreateEnemies()
         {
             enemies = new EnemyBlock(new Vecteur2d(10, 10), gameSize.Width - 50, Side.Enemy);
@@ -118,6 +136,9 @@ namespace SpaceInvaders
             AddNewGameObject(enemies);
         }
 
+        /// <summary>
+        /// Create bunkers with a beautifull offset
+        /// </summary>
         private void CreateBunkers()
         {
             Bitmap bunker = Properties.Resources.bunker;
@@ -129,17 +150,14 @@ namespace SpaceInvaders
 
         #endregion
 
-        #region methods
+        #region Methods
 
         /// <summary>
         /// Force a given key to be ignored in following updates until the user
         /// explicitily retype it or the system autofires it again.
         /// </summary>
         /// <param name="key">key to ignore</param>
-        public void ReleaseKey(Keys key)
-        {
-            keyPressed.Remove(key);
-        }
+        public void ReleaseKey(Keys key) => keyPressed.Remove(key);
 
 
         /// <summary>
@@ -148,25 +166,19 @@ namespace SpaceInvaders
         /// <param name="g">Graphics to draw in</param>
         public void Draw(Graphics g)
         {
-            if (state == GameState.Pause)
+            switch (state)
             {
-                SizeF stringSize = g.MeasureString("Pause", defaultFont);
-                g.DrawString("Pause", defaultFont, blackBrush, (float)gameSize.Width / 2 - stringSize.Width / 2, (float)gameSize.Height / 2);
+                case GameState.Pause:
+                    g.DrawString("Pause", defaultFont, blackBrush, (float)gameSize.Width / 2 - g.MeasureString("Pause", defaultFont).Width / 2, (float)gameSize.Height / 2);
+                    break;
+                case GameState.Lost:
+                    g.DrawString("You lost", defaultFont, blackBrush, (float)gameSize.Width / 2 - g.MeasureString("You lost", defaultFont).Width / 2, (float)gameSize.Height / 2);
+                    return;
+                case GameState.Win:
+                    g.DrawString("You win", defaultFont, blackBrush, (float)gameSize.Width / 2 - g.MeasureString("You win", defaultFont).Width / 2, (float)gameSize.Height / 2);
+                    return;
             }
-            if (state == GameState.Lost)
-            {
-                SizeF stringSize = g.MeasureString("You lost", defaultFont);
-                g.DrawString("You lost", defaultFont, blackBrush, (float)gameSize.Width / 2 - stringSize.Width / 2, (float)gameSize.Height / 2);
-                return;
-            }
-            else if (state == GameState.Win)
-            {
-                SizeF stringSize = g.MeasureString("You win", defaultFont);
-                g.DrawString("You win", defaultFont, blackBrush, (float)gameSize.Width / 2 - stringSize.Width / 2, (float)gameSize.Height / 2);
-                return;
-            }
-            foreach (GameObject gameObject in gameObjects)
-                gameObject.Draw(this, g);       
+            foreach (GameObject gameObject in gameObjects) gameObject.Draw(this, g);      
         }
 
         /// <summary>
@@ -174,30 +186,34 @@ namespace SpaceInvaders
         /// </summary>
         public void Update(double deltaT)
         {
-            if (keyPressed.Contains(Keys.P)) ManageState();
-            IsThisOver();
+            CheckEndGame();
+            if (keyPressed.Contains(Keys.P)) SwitchState();
             if (state == GameState.Pause || state == GameState.Win || state == GameState.Lost) return;
-            // add new game objects
+
             gameObjects.UnionWith(pendingNewGameObjects);
             pendingNewGameObjects.Clear();
 
-            // update each game object
-            foreach (GameObject gameObject in gameObjects)
-            {
-                gameObject.Update(this, deltaT);
-            }
+            foreach (GameObject gameObject in gameObjects) gameObject.Update(this, deltaT);
 
-            // remove dead objects
             gameObjects.RemoveWhere(gameObject => !gameObject.IsAlive());
         }
 
-        private void ManageState()
+        /// <summary>
+        /// Put the game in pause and resume it
+        /// </summary>
+        private void SwitchState()
         {
             state = (state == GameState.Pause) ? GameState.Play : GameState.Pause;                
             ReleaseKey(Keys.P);
         }
 
-        private void IsThisOver()
+        /// <summary>
+        /// Check if the game is over and update the state
+        /// Look if the ennemy block is in the bunkers line
+        /// Look if still ennemy alive
+        /// Look if player still alive
+        /// </summary>
+        private void CheckEndGame()
         {
             foreach (var ship in enemies.EnemyShips) if (ship.Position.Y >= bunkerPosition - 20) playerShip.Lives = 0;
             if (!enemies.IsAlive()) state = GameState.Win;

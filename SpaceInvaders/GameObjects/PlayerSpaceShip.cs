@@ -4,11 +4,26 @@ using System.Windows.Forms;
 
 namespace SpaceInvaders.GameObjects
 {
+    /// <summary>
+    /// The player spaceship
+    /// </summary>
     class PlayerSpaceShip : SpaceShip
     {
+        #region Constructors
 
+        /// <summary>
+        /// Wow another empty constructor
+        /// </summary>
+        /// <param name="position">Initial position</param>
+        /// <param name="lives">Number of lives</param>
+        /// <param name="image">The image</param>
+        /// <param name="side">Side</param>
         public PlayerSpaceShip(Vecteur2d position, int lives, Bitmap image, Side side) : base(position, lives, image, side)
         { }
+
+        #endregion
+
+        #region Methods
 
         public override void Draw(Game gameInstance, Graphics graphics)
         {
@@ -33,5 +48,7 @@ namespace SpaceInvaders.GameObjects
             if (gameInstance.keyPressed.Contains(Keys.Space))
                 Shoot(gameInstance);
         }
+
+        #endregion
     }
 }
