@@ -1,15 +1,11 @@
 ﻿using SpaceInvaders.Utils;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace SpaceInvaders.GameObjects
 {
     class Bunker : SimpleObject
     {
-        public Bunker(Vecteur2d position) : base(position, 1, Properties.Resources.bunker)
+        public Bunker(Vecteur2d position) : base(position, 1, Properties.Resources.bunker, Side.Neutral)
         {
         }
 

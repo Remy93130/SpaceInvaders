@@ -1,9 +1,5 @@
 ﻿using SpaceInvaders.Utils;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace SpaceInvaders.GameObjects
@@ -11,8 +7,14 @@ namespace SpaceInvaders.GameObjects
     class PlayerSpaceShip : SpaceShip
     {
 
-        public PlayerSpaceShip(Vecteur2d position, int lives, Bitmap image) : base(position, lives, image)
+        public PlayerSpaceShip(Vecteur2d position, int lives, Bitmap image, Side side) : base(position, lives, image, side)
         { }
+
+        public override void Draw(Game gameInstance, Graphics graphics)
+        {
+            base.Draw(gameInstance, graphics);
+            graphics.DrawString("Lives:" + Lives, Game.defaultFont, Game.blackBrush, 0, gameInstance.gameSize.Height - 30);
+        }
 
         public override void Update(Game gameInstance, double deltaT)
         {
@@ -28,7 +30,7 @@ namespace SpaceInvaders.GameObjects
                 Position -= new Vecteur2d(Speed);
                 if (Position.X < 0) Position = oldPosition;
             }
-            if (gameInstance.keyPressed.Contains(Keys.Space) && Missile == null || gameInstance.keyPressed.Contains(Keys.Space) && !Missile.IsAlive())
+            if (gameInstance.keyPressed.Contains(Keys.Space))
                 Shoot(gameInstance);
         }
     }

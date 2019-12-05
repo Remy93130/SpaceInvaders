@@ -1,55 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using System.Drawing;
 using SpaceInvaders.GameObjects;
 
 namespace SpaceInvaders.Utils
 {
     abstract class SimpleObject : GameObject
     {
-        private int lives;
+        public int Lives { get; set; }
 
-        private Bitmap image;
+        public Bitmap Image { get; }
 
-        public int Lives
+        protected SimpleObject(Vecteur2d position, int lives, Bitmap image, Side side) : base(position, side)
         {
-            get => lives;
-            set => lives = value;
+            Lives = lives;
+            Image = new Bitmap(image);
         }
 
-        public Bitmap Image => image;
-
-        protected SimpleObject(Vecteur2d position, int lives, Bitmap image) : base(position)
-        {
-            this.lives = lives;
-            this.image = new Bitmap(image);
-        }
-
-        // public override void Draw(Game gameInstance, Graphics graphics) => graphics.DrawImage(Image, (float)Position.X, (float)Position.Y, Image.Width, Image.Height);
-
-        public override void Draw(Game gameInstance, Graphics graphics)
-        {
-            graphics.DrawImage(image, (float)Position.X, (float)Position.Y, image.Width, image.Height);
-            graphics.DrawRectangle(new Pen(Game.blackBrush), (float)Position.X, (float)Position.Y, Image.Width, Image.Height);
-        }
-
-
+        public override void Draw(Game gameInstance, Graphics graphics) => graphics.DrawImage(Image, (float)Position.X, (float)Position.Y, Image.Width, Image.Height);
 
         public override bool IsAlive() => Lives > 0;
 
         protected bool NotInSameArea(Missile m) => 
-            m.Position.X > Position.X + image.Width || 
-            m.Position.Y > Position.Y + image.Height || 
-            Position.X > m.Position.X + m.image.Width || 
-            Position.Y > m.Position.Y + m.image.Height;
+            m.Position.X > Position.X + Image.Width || 
+            m.Position.Y > Position.Y + Image.Height || 
+            Position.X > m.Position.X + m.Image.Width || 
+            Position.Y > m.Position.Y + m.Image.Height;
 
         protected abstract void OnCollision(Missile m, Vecteur2d collisionPoint);
 
         public override void Collision(Missile m)
         {
-            if (NotInSameArea(m)) return;
+            if (NotInSameArea(m) || m.Side.Equals(Side)) return;
             PixelByPixel(m);
         }
 

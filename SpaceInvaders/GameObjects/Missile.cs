@@ -1,25 +1,19 @@
 ﻿using SpaceInvaders.Utils;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace SpaceInvaders.GameObjects
 {
     class Missile : SimpleObject
     {
-        private double speed;
+        private readonly double speed = 1.5;
 
-        public Missile(Vecteur2d position, int lives, Bitmap image) : base(position, lives, image)
+        public Missile(Vecteur2d position, int lives, Bitmap image, Side side) : base(position, lives, image, side)
         {
-            speed = 9.99;
-            //speed = .99;
         }
 
         public override void Update(Game gameInstance, double deltaT)
         {
-            Position -= new Vecteur2d(0, speed);
+            Position = (Side == Side.Ally)? Position -= new Vecteur2d(0, speed) : Position += new Vecteur2d(0, speed);
             Lives = (Position.Y < 0 || Position.Y > gameInstance.gameSize.Height) ? 0 : Lives;
             foreach (var stupidObject in gameInstance.gameObjects)
             {

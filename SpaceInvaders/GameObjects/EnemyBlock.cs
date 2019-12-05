@@ -3,48 +3,52 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 
 namespace SpaceInvaders.GameObjects
 {
     class EnemyBlock : GameObject
     {
-        private HashSet<SpaceShip> enemyShips;
+        public HashSet<SpaceShip> EnemyShips { get; }
 
-        private int baseWidth;
+        private readonly int baseWidth;
 
-        private static Vecteur2d vectorX = new Vecteur2d(.25, 0);
+        private double randomShootProbability;
 
-        private static Vecteur2d vectorY = new Vecteur2d(0, 7.5);
+        private static readonly Random rng = new Random();
+
+        private Vecteur2d vectorX = new Vecteur2d(.25, 0);
+
+        private readonly Vecteur2d vectorY = new Vecteur2d(0, 7.5);
 
         Size size;
 
-        public EnemyBlock(Vecteur2d position, int baseWidth) : base(position)
+        public EnemyBlock(Vecteur2d position, int baseWidth, Side side) : base(position, side)
         {
-            enemyShips = new HashSet<SpaceShip>();
+            EnemyShips = new HashSet<SpaceShip>();
             this.baseWidth = baseWidth;
+            this.randomShootProbability = .05;
         }
 
         public override void Collision(Missile m)
         {
-            foreach (var ship in enemyShips)
+            foreach (var ship in EnemyShips)
             {
                 ship.Collision(m);
             }
-            int oldLen = enemyShips.Count;
-            enemyShips.RemoveWhere(ship => ship.Lives <= 0);
-            if (oldLen != enemyShips.Count) UpdateSize();
+            int oldLen = EnemyShips.Count;
+            EnemyShips.RemoveWhere(ship => ship.Lives <= 0);
+            if (oldLen != EnemyShips.Count) UpdateSize();
         }
 
         // public override void Draw(Game gameInstance, Graphics graphics) => enemyShips.ToList().ForEach(enemy => enemy.Draw(gameInstance, graphics));
 
         public override void Draw(Game gameInstance, Graphics graphics)
         {
-            enemyShips.ToList().ForEach(enemy => enemy.Draw(gameInstance, graphics));
+            EnemyShips.ToList().ForEach(enemy => enemy.Draw(gameInstance, graphics));
             // graphics.DrawRectangle(new Pen(Game.blackBrush), (float)Position.X, (float)Position.Y, size.Width, 100);
         }
 
-        public override bool IsAlive() => (enemyShips.Count(_ship => _ship.IsAlive()) > 0)? true : false;
+        public override bool IsAlive() => (EnemyShips.Count(_ship => _ship.IsAlive()) > 0)? true : false;
 
         public override void Update(Game gameInstance, double deltaT)
         {
@@ -52,16 +56,21 @@ namespace SpaceInvaders.GameObjects
             {
                 Position += vectorY;
                 vectorX -= vectorX * 2.03;
-                enemyShips.ToList().ForEach(enemy => enemy.Position += vectorY);
-                enemyShips.ToList().ForEach(enemy => enemy.Position -= vectorX);
+                randomShootProbability += .015;
+                EnemyShips.ToList().ForEach(enemy => enemy.Position += vectorY);
+                EnemyShips.ToList().ForEach(enemy => enemy.Position -= vectorX);
             }
             else
             {
                 Position += vectorX;
-                enemyShips.ToList().ForEach(enemy => enemy.Position += vectorX);
+                EnemyShips.ToList().ForEach(enemy => enemy.Position += vectorX);
             }
-            foreach (var ship in enemyShips)
+            foreach (var ship in EnemyShips)
+            {
+                double r = rng.NextDouble();
+                if (r <= randomShootProbability * deltaT) ship.Shoot(gameInstance);
                 ship.Lives = (ship.Position.Y + ship.Image.Height > gameInstance.gameSize.Height) ? 0 : ship.Lives;
+            }
         }
 
         public void AddLine(int nbShips, int nbLives, Bitmap shipImage)
@@ -71,7 +80,7 @@ namespace SpaceInvaders.GameObjects
             for (int i = 0; i < nbShips; i++)
             {
                 var vector = new Vecteur2d((i * shipImage.Width) + offsetX * (i + 1), offsetY);
-                enemyShips.Add(new SpaceShip(vector, nbLives, shipImage));
+                EnemyShips.Add(new SpaceShip(vector, nbLives, shipImage, Side.Enemy));
             }
             size.Height++;
         }
@@ -81,7 +90,7 @@ namespace SpaceInvaders.GameObjects
             double minLenX = Double.MaxValue;
             double maxLenX = Double.MinValue;
             double image_len = 0;
-            foreach(var ship in enemyShips)
+            foreach(var ship in EnemyShips)
             {
                 if (ship.Position.X > maxLenX)
                 {

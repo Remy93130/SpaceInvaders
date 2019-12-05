@@ -1,46 +1,41 @@
 ﻿using SpaceInvaders.Utils;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 
 namespace SpaceInvaders.GameObjects
 {
     class SpaceShip : SimpleObject
     {
-        private double speed;
 
-        private Missile missile;
+        protected double Speed { get; }
 
-        protected double Speed => speed;
-
-        protected Missile Missile => missile;
+        protected Missile Missile { get; set; }
 
 
-        public SpaceShip(Vecteur2d position, int lives, Bitmap image) : base(position, lives, image)
+        public SpaceShip(Vecteur2d position, int lives, Bitmap image, Side side) : base(position, lives, image, side)
         {
-            speed = 1;
-            missile = null;
+            Speed = 1;
+            Missile = null;
         }
 
         public override void Update(Game gameInstance, double deltaT)
         {
         }
 
-        protected void Shoot(Game gameInstance)
+        public void Shoot(Game gameInstance)
         {
-            missile = new Missile(new Vecteur2d(Position.X + Image.Width / 2, Position.Y - Image.Height / 2 - 10), 10, Properties.Resources.shoot1);
-            gameInstance.AddNewGameObject(missile);
+            if (Missile != null && Missile.IsAlive()) return;
+            double positionY = (Side == Side.Ally) ? Position.Y - Image.Height / 2 : Position.Y + Image.Height;
+            Missile = new Missile(new Vecteur2d(Position.X + Image.Width / 2, positionY), 10, Properties.Resources.shoot1, Side);
+            gameInstance.AddNewGameObject(Missile);
         }
 
         protected override void OnCollision(Missile m, Vecteur2d collisionPoint)
         {
-            Console.WriteLine("Touched spaceship lives before : " + Lives);
-            Lives -= m.Lives;
-            m.Lives = 0;
-            Console.WriteLine("Touched spaceship lives left : " + Lives);
+            if (m.IsAlive())
+            {
+                Lives--;
+                m.Lives = 0;
+            }
         }
     }
 }

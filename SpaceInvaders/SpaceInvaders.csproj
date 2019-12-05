@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -32,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -55,13 +57,14 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameObjects\Bunker.cs" />
     <Compile Include="GameObjects\EnemyBlock.cs" />
-    <Compile Include="GameObjects\GameObject.cs" />
+    <Compile Include="Utils\GameObject.cs" />
     <Compile Include="GameObjects\Missile.cs" />
     <Compile Include="GameObjects\PlayerSpaceShip.cs" />
     <Compile Include="GameObjects\SpaceShip.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\GameState.cs" />
+    <Compile Include="Utils\Side.cs" />
     <Compile Include="Utils\SimpleObject.cs" />
     <Compile Include="Utils\Vecteur2d.cs" />
     <EmbeddedResource Include="Form1.resx">

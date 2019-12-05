@@ -1,10 +1,6 @@
 ﻿using SpaceInvaders.GameObjects;
 using SpaceInvaders.Utils;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace SpaceInvaders
 {
@@ -13,17 +9,14 @@ namespace SpaceInvaders
     /// </summary>
     abstract class GameObject
     {
-        private Vecteur2d position;
+        public Vecteur2d Position { get; set; }
 
-        public Vecteur2d Position
-        {
-            get => position;
-            set => position = value;
-        }
+        public Side Side { get; set; }
 
-        public GameObject(Vecteur2d position)
+        public GameObject(Vecteur2d position, Side side)
         {
-            this.position = position;
+            Side = side;
+            Position = position;
         }
 
         /// <summary>
