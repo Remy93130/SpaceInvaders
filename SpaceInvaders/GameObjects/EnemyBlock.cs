@@ -72,10 +72,7 @@ namespace SpaceInvaders.GameObjects
 
         public override void Collision(Missile m)
         {
-            foreach (var ship in EnemyShips)
-            {
-                ship.Collision(m);
-            }
+            foreach (var ship in EnemyShips) ship.Collision(m);
             int oldLen = EnemyShips.Count;
             EnemyShips.RemoveWhere(ship => ship.Lives <= 0);
             if (oldLen != EnemyShips.Count) UpdateSize();
@@ -101,8 +98,7 @@ namespace SpaceInvaders.GameObjects
             // Fire in the hole
             foreach (var ship in EnemyShips)
             {
-                double r = rng.NextDouble();
-                if (r <= randomShootProbability * deltaT) ship.Shoot(gameInstance);
+                if (rng.NextDouble() <= randomShootProbability * deltaT) ship.Shoot(gameInstance);
                 ship.Lives = (ship.Position.Y + ship.Image.Height > gameInstance.gameSize.Height) ? 0 : ship.Lives;
             }
         }

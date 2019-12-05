@@ -166,19 +166,14 @@ namespace SpaceInvaders
         /// <param name="g">Graphics to draw in</param>
         public void Draw(Graphics g)
         {
-            switch (state)
-            {
-                case GameState.Pause:
-                    g.DrawString("Pause", defaultFont, blackBrush, (float)gameSize.Width / 2 - g.MeasureString("Pause", defaultFont).Width / 2, (float)gameSize.Height / 2);
-                    break;
-                case GameState.Lost:
-                    g.DrawString("You lost", defaultFont, blackBrush, (float)gameSize.Width / 2 - g.MeasureString("You lost", defaultFont).Width / 2, (float)gameSize.Height / 2);
-                    return;
-                case GameState.Win:
-                    g.DrawString("You win", defaultFont, blackBrush, (float)gameSize.Width / 2 - g.MeasureString("You win", defaultFont).Width / 2, (float)gameSize.Height / 2);
-                    return;
-            }
-            foreach (GameObject gameObject in gameObjects) gameObject.Draw(this, g);      
+            if (state == GameState.Pause) 
+                g.DrawString("Pause", defaultFont, blackBrush, (float)gameSize.Width / 2 - g.MeasureString("Pause", defaultFont).Width / 2, (float)gameSize.Height / 2);
+            else if (state == GameState.Lost) 
+                g.DrawString("You lost", defaultFont, blackBrush, (float)gameSize.Width / 2 - g.MeasureString("You lost", defaultFont).Width / 2, (float)gameSize.Height / 2);
+            else if (state == GameState.Win) 
+                g.DrawString("You win", defaultFont, blackBrush, (float)gameSize.Width / 2 - g.MeasureString("You win", defaultFont).Width / 2, (float)gameSize.Height / 2);
+            if (state == GameState.Pause || state == GameState.Play) 
+                foreach (GameObject gameObject in gameObjects) gameObject.Draw(this, g);
         }
 
         /// <summary>
